@@ -91,8 +91,12 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
           ],
         ),
         Row(
+          children: const [
+            Text("allocate heap memory"),
+          ],
+        ),
+        Row(
           children: [
-            const Text("allocate heap memory"),
             Text("byte[] numbers: "+_heapApplyNum.toString()),
             MaterialButton(
               child: const Text('Increase'),
@@ -135,8 +139,12 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
           ],
         ),
         Row(
+          children: const [
+            Text("Nio allocate heap memory "),
+          ],
+        ),
+        Row(
           children: [
-            const Text("Nio allocate heap memory "),
             Text("byte[] numbers: "+_heapByteBufferNum.toString()),
             MaterialButton(
               child: const Text('Increase'),
@@ -179,8 +187,12 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
           ],
         ),
         Row(
+          children: const [
+            Text("Nio allocate direct memory "),
+          ],
+        ),
+        Row(
           children: [
-            const Text("Nio allocate direct memory "),
             Text("byte[] number: "+_directNum.toString()),
             MaterialButton(
               child: const Text('Increase'),
@@ -223,8 +235,12 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
           ],
         ),
         Row(
+          children: const [
+            Text("allocate metaspace memory "),
+          ],
+        ),
+        Row(
           children: [
-            const Text("allocate metaspace memory "),
             Text("class generate number: " + _metaspaceNum.toString()),
             MaterialButton(
               child: const Text('Increase'),
@@ -233,7 +249,7 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
                 if(null == _metaspaceTimer) {
                   var duration = const Duration(seconds: 1);
                   _metaspaceTimer = Timer.periodic(duration, (t){
-                    _JVMClient?.memoryMetaspaceApply(20480).then((value) => _metaspaceChange(value));
+                    _JVMClient?.memoryMetaspaceApply(2048).then((value) => _metaspaceChange(value));
                   });
                 }
               },
