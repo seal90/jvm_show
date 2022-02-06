@@ -19,7 +19,7 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
 
   JVMClient? _JVMClient;
 
-  String _connectStatusStr = '未连接';
+  String _connectStatusStr = 'not connected';
 
   Timer? _heapApplyTimer;
 
