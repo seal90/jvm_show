@@ -37,6 +37,10 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
 
   int _metaspaceNum = 0;
 
+  Timer? _metaspaceHoldTimer;
+
+  int _metaspaceHoldNum = 0;
+
   void closeHandler() {
     if(_JVMClient != null) {
       _JVMClient?.close();
@@ -265,6 +269,41 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
                 }
               },
             ),
+          ]
+        ),
+        Row(
+          children:[
+            Text("class generate hold number: " + _metaspaceHoldNum.toString()),
+            MaterialButton(
+              child: const Text('Increase hold'),
+              color: Colors.lightBlue,
+              onPressed: () {
+                if(null == _metaspaceHoldTimer) {
+                  var duration = const Duration(seconds: 1);
+                  _metaspaceHoldTimer = Timer.periodic(duration, (t){
+                    _JVMClient?.memoryMetaspaceHoldApply(2048).then((value) => _metaspaceHoldChange(value));
+                  });
+                }
+              },
+            ),
+            MaterialButton(
+              child: const Text('Cancel increase hold'),
+              color: Colors.lightBlue,
+              onPressed: () {
+                if(null != _metaspaceHoldTimer) {
+                  _metaspaceHoldTimer?.cancel();
+                  _metaspaceHoldTimer = null;
+                  _metaspaceHoldChange(0);
+                }
+              },
+            ),
+            MaterialButton(
+              child: const Text('Clear increase hold'),
+              color: Colors.lightBlue,
+              onPressed: () {
+                _JVMClient?.memoryMetaspaceHoldClear();
+              },
+            ),
           ],
         ),
       ],
@@ -298,6 +337,12 @@ class _JVMMemoryState extends State<JVMMemoryWidget> {
   void _metaspaceChange(int num) {
     setState(() {
       _metaspaceNum = num;
+    });
+  }
+
+  void _metaspaceHoldChange(int num) {
+    setState(() {
+      _metaspaceHoldNum = num;
     });
   }
 }

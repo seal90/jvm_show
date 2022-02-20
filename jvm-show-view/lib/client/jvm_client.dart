@@ -240,4 +240,40 @@ class JVMClient {
     var responseData = int.parse(value.toObject().toString());
     return Future.value(responseData);
   }
+
+  ///  allocate metaspace memory hold class
+  Future memoryMetaspaceHoldApply(int num) async {
+    String route = "memory.metaspace.apply.hold";
+
+    var routingMetadata = RoutingMetadata(route, List.empty());
+    var compositeMetadata = CompositeMetadata(RSocketByteBuffer());
+    compositeMetadata.addMetadata(routingMetadata);
+
+    var metadata = compositeMetadata.toUint8Array();
+    var cborData = cbor.encode(CborSmallInt(num));
+    var data = Uint8List.fromList(cborData);
+    Payload payload = Payload.from(metadata, data);
+
+    var responsePayload = await rSocket.requestResponse!(payload);
+    var responseCborData = responsePayload.data;
+    List<int> intList = List.castFrom(responseCborData!);
+    var value = cbor.decode(intList);
+
+    var responseData = int.parse(value.toObject().toString());
+    return Future.value(responseData);
+  }
+
+  ///  clear
+  Future memoryMetaspaceHoldClear() async {
+    String route = "memory.metaspace.hold.clear";
+
+    var routingMetadata = RoutingMetadata(route, List.empty());
+    var compositeMetadata = CompositeMetadata(RSocketByteBuffer());
+    compositeMetadata.addMetadata(routingMetadata);
+    var metadata = compositeMetadata.toUint8Array();
+    Payload payload = Payload.from(metadata, null);
+
+    await rSocket.requestResponse!(payload);
+    return Future.value();
+  }
 }

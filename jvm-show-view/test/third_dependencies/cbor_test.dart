@@ -5,6 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
 
+  var a = cbor.encode(const CborSmallInt(43008));
+  print(a);
+  var aa = cbor.decode(a);
+  if(aa is CborSmallInt) {
+    print(aa.toInt());
+  }
+
   test('{1:2,3:4}', () {
     final encoded = cbor.encode(CborMap({
       CborSmallInt(1): CborSmallInt(2),
