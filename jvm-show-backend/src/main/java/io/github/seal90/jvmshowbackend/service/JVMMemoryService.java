@@ -21,7 +21,9 @@ public class JVMMemoryService {
 
     private byte[] compiledClazz = null;
 
-    private Integer clazzNameNum = 0;
+    private Long clazzNameNum = 0L;
+
+    private Long holdClassNameNum = 0L;
 
     private List<Class> holdClass = new ArrayList<>();
 
@@ -116,9 +118,9 @@ public class JVMMemoryService {
 //    }
 
     /**
-     * allocate metaspace memory
+     * allocate metaspace memory hold class
      */
-    public Integer applyMetaspaceByte(Integer num) {
+    public Long applyMetaspaceByteHold(Integer num) {
         if(null == compiledClazz) {
             String clazzBase64 = "yv66vgAAADcADAEAEm15cGFja2FnZS9NeWNsYXNzMAcAAQEAEGphdmEvbGFuZy9PYmplY3QHAAMBAApTb3VyY2VGaWxlAQANTXljbGFzczAuamF2YQEABjxpbml0PgEAAygpVgwABwAICgAEAAkBAARDb2RlACEAAgAEAAAAAAABAAEABwAIAAEACwAAABEAAQABAAAABSq3AAqxAAAAAAABAAUAAAACAAY=";
 
@@ -130,7 +132,7 @@ public class JVMMemoryService {
         MyClassLoader myClassLoader = new MyClassLoader(Thread.currentThread().getContextClassLoader());
 
         for (int i = 0; i < num; i++) {
-            Integer currentNum = clazzNameNum++;
+            Long currentNum = holdClassNameNum++;
             byte[] bytes = String.valueOf(currentNum).getBytes();
             byte[] bytecode = new byte[compiledClazz.length + bytes.length - 1];
             System.arraycopy(compiledClazz, 0, bytecode, 0, 30);
@@ -142,6 +144,40 @@ public class JVMMemoryService {
             String classname = "mypackage.Myclass" + currentNum;
             Class cl = myClassLoader.defineClass(classname, bytecode);
             holdClass.add(cl);
+        }
+        return holdClassNameNum;
+    }
+
+    public void clearMetaspaceHoldClass() {
+        holdClass.clear();
+    }
+
+    /**
+     * allocate metaspace memory
+     */
+    public Long applyMetaspaceByte(Integer num) {
+        if(null == compiledClazz) {
+            String clazzBase64 = "yv66vgAAADcADAEAEm15cGFja2FnZS9NeWNsYXNzMAcAAQEAEGphdmEvbGFuZy9PYmplY3QHAAMBAApTb3VyY2VGaWxlAQANTXljbGFzczAuamF2YQEABjxpbml0PgEAAygpVgwABwAICgAEAAkBAARDb2RlACEAAgAEAAAAAAABAAEABwAIAAEACwAAABEAAQABAAAABSq3AAqxAAAAAAABAAUAAAACAAY=";
+
+            compiledClazz = Base64.getDecoder().decode(clazzBase64);
+            compiledClazz[7] = 52;
+        }
+        int classNameLength = Integer.valueOf(compiledClazz[12]);
+
+        MyClassLoader myClassLoader = new MyClassLoader(Thread.currentThread().getContextClassLoader());
+
+        for (int i = 0; i < num; i++) {
+            Long currentNum = clazzNameNum++;
+            byte[] bytes = String.valueOf(currentNum).getBytes();
+            byte[] bytecode = new byte[compiledClazz.length + bytes.length - 1];
+            System.arraycopy(compiledClazz, 0, bytecode, 0, 30);
+            bytecode[12] = (byte) (classNameLength + bytes.length - 1 & 0xFF);
+
+            System.arraycopy(bytes, 0, bytecode, 30, bytes.length);
+            System.arraycopy(compiledClazz, 31, bytecode, 30 + bytes.length, compiledClazz.length - 31);
+
+            String classname = "mypackage.Myclass" + currentNum;
+            Class cl = myClassLoader.defineClass(classname, bytecode);
         }
         return clazzNameNum;
     }

@@ -87,9 +87,21 @@ public class JVMMemoryController {
         return Mono.empty();
     }
 
+    @MessageMapping("memory.metaspace.apply.hold")
+    public Mono<Long> applyMetaspaceHold(Integer num) {
+        Long clazzNameNum = jvmMemoryService.applyMetaspaceByteHold(num);
+        return Mono.just(clazzNameNum);
+    }
+
+    @MessageMapping("memory.metaspace.hold.clear")
+    public Mono applyMetaspaceHoldClear() {
+        jvmMemoryService.clearMetaspaceHoldClass();
+        return Mono.empty();
+    }
+
     @MessageMapping("memory.metaspace.apply")
-    public Mono<Integer> applyMetaspace(Integer num) {
-        Integer clazzNameNum = jvmMemoryService.applyMetaspaceByte(num);
+    public Mono<Long> applyMetaspace(Integer num) {
+        Long clazzNameNum = jvmMemoryService.applyMetaspaceByte(num);
         return Mono.just(clazzNameNum);
     }
 

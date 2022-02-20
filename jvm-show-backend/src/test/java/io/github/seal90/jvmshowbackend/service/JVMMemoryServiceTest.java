@@ -55,7 +55,7 @@ public class JVMMemoryServiceTest {
     @Test
     public void applyMetaspaceByteTest() {
         while (true) {
-            jvmMemoryService.applyMetaspaceByte(10000);
+            jvmMemoryService.applyMetaspaceByteHold(10000);
             Thread.sleep(50);
         }
     }
